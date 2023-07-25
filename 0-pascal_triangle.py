@@ -10,6 +10,8 @@ def pascal_triangle(n):
     Args:
         n (int): number of rows
     """
+    if n <= 0:
+        return []
     result = []
 
     for i in range(n):
