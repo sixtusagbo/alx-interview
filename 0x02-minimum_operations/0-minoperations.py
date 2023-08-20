@@ -13,6 +13,10 @@ def minOperations(n: int) -> int:
     particular number dividing it and the remainder will always be 0,
     I used integer division to avoid type errors.
     """
+    # If n is impossible to achieve, return 0
+    if n <= 1:
+        return 0
+
     result = 0
 
     # While n is divisble by 2
