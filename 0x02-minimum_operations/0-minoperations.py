@@ -32,7 +32,8 @@ def minOperations(n: int) -> int:
             # Add i to result
             result += i
 
-    # If n is a prime number that is not 2, then n is greater than 2 at this point
+    # If n is a prime number that is not 2,
+    # then n is greater than 2 at this point
     if n > 2:
         # Just add n to the result
         result += n
