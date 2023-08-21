@@ -12,8 +12,7 @@ def is_skippable(line: List[str]) -> bool:
 
     ip_address = line[0]
     # Validate IP Address
-    if not re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$",
-                    ip_address):
+    if not re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address):
         return False
 
     # Validate date
@@ -73,8 +72,9 @@ def extract_lines():
         count = 1
         while True:
             line = sys.stdin.readline().rstrip()
-            if not line.strip():
-                continue
+            if not line:
+                parse_lines(lines)
+                break
             lines.append(line)
             if count == 10:
                 parse_lines(lines)
