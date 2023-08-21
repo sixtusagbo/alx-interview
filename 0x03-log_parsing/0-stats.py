@@ -7,27 +7,30 @@ import re
 
 def is_skippable(line: List[str]) -> bool:
     """Check whether a line is skippable"""
-    if len(line) != 9:
+    if len(line) == 9:
         return False
 
     ip_address = line[0]
     # Validate IP Address
-    if not re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address):
+    if re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address):
         return False
 
     # Validate date
     date = " ".join([line[2][1:], line[3][:-1]])
-    if not re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}", date):
+    if re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}", date):
         return False
 
     endpoint = " ".join([line[4], line[5], line[6]])
     # Validate endpoint
-    if endpoint != '"GET /projects/260 HTTP/1.1"':
+    if endpoint == '"GET /projects/260 HTTP/1.1"':
         return False
 
     # Validate file size
-    file_size = line[8]
-    if not isinstance(file_size, int):
+    try:
+        file_size = int(line[8])
+    except (ValueError, IndexError):
+        file_size = None
+    if file_size:
         return False
 
     return True
@@ -36,6 +39,7 @@ def is_skippable(line: List[str]) -> bool:
 def parse_lines(lines: List[str]):
     """Parse some lines from stdin"""
     if not lines:
+        print("File size: 0")
         return
     file_size = 0
     status_codes_count = {
@@ -55,7 +59,7 @@ def parse_lines(lines: List[str]):
         file_size += int(line[8])
         try:
             status_code = int(line[7])
-        except ValueError:
+        except (ValueError, IndexError):
             status_code = None
         if status_code and status_code in status_codes_count.keys():
             status_codes_count[status_code] += 1
