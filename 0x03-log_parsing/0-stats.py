@@ -2,6 +2,35 @@
 """Log parser"""
 import sys
 from typing import List
+import re
+
+
+def is_skippable(line: List[str]) -> bool:
+    """Check whether a line is skippable"""
+    if len(line) != 9:
+        return False
+
+    ip_address = line[0]
+    # Validate IP Address
+    if not re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address):
+        return False
+
+    # Validate date
+    date = " ".join([line[2][1:], line[3][:-1]])
+    if not re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}", date):
+        return False
+
+    endpoint = " ".join([line[4], line[5], line[6]])
+    # Validate endpoint
+    if endpoint != '"GET /projects/260 HTTP/1.1"':
+        return False
+
+    # Validate file size
+    file_size = line[8]
+    if not isinstance(file_size, int):
+        return False
+
+    return True
 
 
 def parse_lines(lines: List[str]):
@@ -21,12 +50,14 @@ def parse_lines(lines: List[str]):
     }
     for log in lines:
         line = log.split(" ")
+        if is_skippable(line):
+            continue
         file_size += int(line[8])
         try:
             status_code = int(line[7])
         except ValueError:
             status_code = None
-        if status_code:
+        if status_code and status_code in status_codes_count.keys():
             status_codes_count[status_code] += 1
     print("File size: {}".format(file_size))
     for key, value in status_codes_count.items():
