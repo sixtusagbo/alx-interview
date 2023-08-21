@@ -73,7 +73,9 @@ def extract_lines():
         while True:
             line = sys.stdin.readline().rstrip()
             if not line:
-                parse_lines(lines)
+                linesLength = len(lines)
+                if linesLength > 0 and linesLength % 10 != 0:
+                    parse_lines(lines)
                 break
             lines.append(line)
             if count == 10:
