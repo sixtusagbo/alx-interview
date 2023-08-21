@@ -16,7 +16,9 @@ def is_skippable(line: List[str]) -> bool:
     try:
         ip_address = line[0]
         # Validate IP Address
-        if re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address):
+        if re.match(
+            r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address
+        ):
             result = False
         else:
             result = True
@@ -70,7 +72,12 @@ def parse_lines(lines: List[str]):
         line = log.split(" ")
         if is_skippable(line):
             continue
-        file_size += int(line[8])
+        try:
+            size = int(line[8])
+        except (ValueError, IndexError):
+            size = None
+        if size:
+            file_size += size
         try:
             status_code = int(line[7])
         except (ValueError, IndexError):
