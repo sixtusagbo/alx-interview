@@ -70,7 +70,11 @@ def parse_lines(lines: List[str]):
         line = log.split(" ")
         if is_skippable(line):
             continue
-        file_size += int(line[8])
+        try:
+            size = int(line[8])
+        except (ValueError, IndexError):
+            size = None
+        file_size += size if size else 0
         try:
             status_code = int(line[7])
         except (ValueError, IndexError):
