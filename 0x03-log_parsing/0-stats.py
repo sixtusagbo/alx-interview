@@ -38,7 +38,7 @@ def is_skippable(line: List[str]) -> bool:
         # Validate file size
         try:
             file_size = int(line[8])
-        except ValueError:
+        except (ValueError, IndexError):
             file_size = None
         if file_size:
             result = False
@@ -70,11 +70,7 @@ def parse_lines(lines: List[str]):
         line = log.split(" ")
         if is_skippable(line):
             continue
-        try:
-            size = int(line[8])
-        except (ValueError, IndexError):
-            size = None
-        file_size += size if size else 0
+        file_size += int(line[8])
         try:
             status_code = int(line[7])
         except (ValueError, IndexError):
