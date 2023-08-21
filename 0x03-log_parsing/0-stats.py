@@ -12,7 +12,8 @@ def is_skippable(line: List[str]) -> bool:
 
     ip_address = line[0]
     # Validate IP Address
-    if not re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address):
+    if not re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$",
+                    ip_address):
         return False
 
     # Validate date
