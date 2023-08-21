@@ -7,33 +7,39 @@ import re
 
 def is_skippable(line: List[str]) -> bool:
     """Check whether a line is skippable"""
+    result = False
     if len(line) == 9:
-        return False
+        result = False
 
-    ip_address = line[0]
-    # Validate IP Address
-    if re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address):
-        return False
-
-    # Validate date
-    date = " ".join([line[2][1:], line[3][:-1]])
-    if re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}", date):
-        return False
-
-    endpoint = " ".join([line[4], line[5], line[6]])
-    # Validate endpoint
-    if endpoint == '"GET /projects/260 HTTP/1.1"':
-        return False
-
-    # Validate file size
     try:
-        file_size = int(line[8])
-    except (ValueError, IndexError):
-        file_size = None
-    if file_size:
-        return False
+        ip_address = line[0]
+        # Validate IP Address
+        if re.match(r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address):
+            result = False
 
-    return True
+        # Validate date
+        date = " ".join([line[2][1:], line[3][:-1]])
+        if re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}", date):
+            result = False
+
+        endpoint = " ".join([line[4], line[5], line[6]])
+        # Validate endpoint
+        if endpoint == '"GET /projects/260 HTTP/1.1"':
+            result = False
+
+        # Validate file size
+        try:
+            file_size = int(line[8])
+        except ValueError:
+            file_size = None
+        if file_size:
+            result = False
+    except IndexError:
+        result = False
+
+    result = True
+
+    return result
 
 
 def parse_lines(lines: List[str]):
@@ -79,6 +85,8 @@ def extract_lines():
             if not line:
                 linesLength = len(lines)
                 if linesLength > 0 and linesLength % 10 != 0:
+                    parse_lines(lines)
+                if linesLength == 0:
                     parse_lines(lines)
                 break
             lines.append(line)

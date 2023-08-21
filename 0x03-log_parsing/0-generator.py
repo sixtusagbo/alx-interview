@@ -14,7 +14,8 @@ for i in range(30):
             random.randint(1, 255),
             datetime.datetime.now(),
             random.choice([200, 301, 400, 401, 403, 404, 405, 500]),
-            random.randint(1, 1024),
+            # random.randint(1, 1024),
+            "sds",
         )
     )
     sys.stdout.flush()
