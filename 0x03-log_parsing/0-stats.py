@@ -16,23 +16,20 @@ def validate_line(log: str) -> Union[List[str], None]:
             return None
 
     try:
-        ip_address = line[0]
         # Validate IP Address
-        if (
-            not re.match(
-                r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address
-            )
-            and ip_address != "Holberton"
-        ):
+        ip_address = line[0]
+        ip_pattern = r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
+        if not re.match(ip_pattern, ip_address) and ip_address != "Holberton":
             return None
 
         # Validate date
         date = " ".join([line[2][1:], line[3][:-1]])
-        if not re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}", date):
+        date_pattern = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}"
+        if not re.match(date_pattern, date):
             return None
 
-        endpoint = " ".join([line[4], line[5], line[6]])
         # Validate endpoint
+        endpoint = " ".join([line[4], line[5], line[6]])
         if endpoint != '"GET /projects/260 HTTP/1.1"':
             return None
 
