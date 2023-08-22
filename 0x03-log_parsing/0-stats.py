@@ -18,8 +18,11 @@ def validate_line(log: str) -> Union[List[str], None]:
     try:
         ip_address = line[0]
         # Validate IP Address
-        if not re.match(
-            r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address
+        if (
+            not re.match(
+                r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address
+            )
+            and ip_address != "Holberton"
         ):
             return None
 
@@ -65,7 +68,6 @@ def parse_lines(lines: List[str]):
     for log in lines:
         line = validate_line(log)
         if line is None:
-            print(f"Skipped: {line}")
             continue
         try:
             size = int(line[8])
