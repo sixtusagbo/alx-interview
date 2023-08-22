@@ -1,55 +1,49 @@
 #!/usr/bin/python3
 """Log parser"""
 import sys
-from typing import List
+from typing import List, Union
 import re
 
 
-def is_skippable(line: List[str]) -> bool:
+def validate_line(log: str) -> Union[List[str], None]:
     """Check whether a line is skippable"""
-    result = False
-    if len(line) == 9:
-        result = False
-    else:
-        result = True
+    line = log.split(" ")
+    if len(line) != 9:
+        if "-" in line[0]:
+            clean = log.replace("-", " - ", 1)
+            line = clean.split(" ")
+        else:
+            return None
 
     try:
         ip_address = line[0]
         # Validate IP Address
-        if re.match(
+        if not re.match(
             r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$", ip_address
         ):
-            result = False
-        else:
-            result = True
+            return None
 
         # Validate date
         date = " ".join([line[2][1:], line[3][:-1]])
-        if re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}", date):
-            result = False
-        else:
-            result = True
+        if not re.match(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}", date):
+            return None
 
         endpoint = " ".join([line[4], line[5], line[6]])
         # Validate endpoint
-        if endpoint == '"GET /projects/260 HTTP/1.1"':
-            result = False
-        else:
-            result = True
+        if endpoint != '"GET /projects/260 HTTP/1.1"':
+            return None
 
         # Validate file size
         try:
             file_size = int(line[8])
         except (ValueError, IndexError):
             file_size = None
-        if file_size:
-            result = False
-        else:
-            result = True
+        if not file_size:
+            return None
     except IndexError:
-        result = False
+        return None
 
-    return result
+    return line
 
 
 def parse_lines(lines: List[str]):
@@ -69,8 +63,9 @@ def parse_lines(lines: List[str]):
         500: 0,
     }
     for log in lines:
-        line = log.split(" ")
-        if is_skippable(line):
+        line = validate_line(log)
+        if line is None:
+            print(f"Skipped: {line}")
             continue
         try:
             size = int(line[8])
