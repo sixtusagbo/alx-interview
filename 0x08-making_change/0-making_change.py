@@ -1,4 +1,13 @@
+#!/usr/bin/python3
+"""
+Making Change
+"""
+
+
 def makeChange(coins, total):
+    """
+    Return the fewest number of coins needed to meet a given amount total
+    """
     each_total = [float("inf")] * (total + 1)
 
     # 0 amount requires 0 coins
